@@ -1,0 +1,768 @@
+/**
+ * Canvas Mode Styles
+ *
+ * Modern CSS using OKLCH colors for perceptual uniformity
+ * ~3KB gzipped
+ */
+
+/* ============================================================
+   CSS Custom Properties (Dark Theme Default)
+   ============================================================ */
+
+:root {
+  /* Canvas Panel */
+  --canvas-bg: oklch(14% 0.01 260);
+  --canvas-border: oklch(25% 0.02 260);
+  --canvas-header-bg: oklch(16% 0.01 260);
+
+  /* Editor */
+  --editor-bg: oklch(12% 0.005 260);
+  --editor-line-number: oklch(45% 0.01 260);
+  --editor-line-number-active: oklch(65% 0.02 260);
+  --editor-cursor: oklch(75% 0.15 200);
+  --editor-selection: oklch(35% 0.08 260 / 0.5);
+  --editor-line-highlight: oklch(18% 0.01 260);
+
+  /* Syntax Highlighting (DuoTone-inspired) */
+  --syntax-keyword: oklch(70% 0.15 280);     /* Purple */
+  --syntax-string: oklch(72% 0.12 160);      /* Teal */
+  --syntax-function: oklch(75% 0.14 230);    /* Blue */
+  --syntax-comment: oklch(50% 0.02 260);     /* Gray */
+  --syntax-variable: oklch(80% 0.05 260);    /* Light */
+  --syntax-number: oklch(72% 0.15 50);       /* Orange */
+  --syntax-operator: oklch(65% 0.08 260);    /* Muted */
+  --syntax-type: oklch(70% 0.12 320);        /* Pink */
+  --syntax-property: oklch(75% 0.10 200);    /* Cyan */
+  --syntax-tag: oklch(70% 0.15 25);          /* Red */
+
+  /* Status */
+  --canvas-success: oklch(70% 0.18 145);
+  --canvas-warning: oklch(75% 0.18 80);
+  --canvas-error: oklch(65% 0.2 25);
+  --canvas-info: oklch(70% 0.15 230);
+
+  /* Version Control */
+  --version-current: oklch(70% 0.15 200);
+  --version-dot: oklch(40% 0.03 260);
+  --version-dot-active: oklch(70% 0.12 200);
+
+  /* Toolbar */
+  --toolbar-button-bg: oklch(20% 0.01 260);
+  --toolbar-button-hover: oklch(25% 0.02 260);
+  --toolbar-button-active: oklch(30% 0.03 260);
+
+  /* Diff */
+  --diff-added-bg: oklch(70% 0.18 145 / 0.15);
+  --diff-added-border: oklch(70% 0.18 145);
+  --diff-removed-bg: oklch(65% 0.2 25 / 0.15);
+  --diff-removed-border: oklch(65% 0.2 25);
+  --diff-context: oklch(50% 0.02 260);
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --canvas-bg: oklch(98% 0.005 260);
+  --canvas-border: oklch(85% 0.01 260);
+  --canvas-header-bg: oklch(96% 0.005 260);
+
+  --editor-bg: oklch(100% 0 0);
+  --editor-line-number: oklch(60% 0.01 260);
+  --editor-line-number-active: oklch(40% 0.01 260);
+  --editor-selection: oklch(70% 0.1 220 / 0.3);
+  --editor-line-highlight: oklch(97% 0.005 260);
+
+  --syntax-keyword: oklch(50% 0.2 280);
+  --syntax-string: oklch(45% 0.15 160);
+  --syntax-function: oklch(45% 0.18 230);
+  --syntax-comment: oklch(55% 0.02 260);
+  --syntax-variable: oklch(25% 0.03 260);
+  --syntax-number: oklch(50% 0.18 50);
+  --syntax-type: oklch(50% 0.15 320);
+
+  --toolbar-button-bg: oklch(95% 0.005 260);
+  --toolbar-button-hover: oklch(90% 0.01 260);
+}
+
+/* ============================================================
+   Canvas Panel Layout
+   ============================================================ */
+
+.canvas-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas-bg);
+  border-left: 1px solid var(--canvas-border);
+  height: 100%;
+  min-width: 300px;
+  max-width: 80vw;
+  position: relative;
+}
+
+.canvas-panel--transitioning {
+  transition: width 0.2s ease;
+}
+
+/* Resize Handle */
+.canvas-resize-handle {
+  position: absolute;
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 10;
+  transition: background 0.15s ease;
+}
+
+.canvas-resize-handle:hover,
+.canvas-resize-handle:active {
+  background: var(--canvas-border);
+}
+
+.canvas-resize-handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 30px;
+  border-radius: 1px;
+  background: var(--editor-line-number);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.canvas-resize-handle:hover::after {
+  opacity: 1;
+}
+
+/* ============================================================
+   Canvas Header
+   ============================================================ */
+
+.canvas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--canvas-header-bg);
+  border-bottom: 1px solid var(--canvas-border);
+  min-height: 44px;
+}
+
+.canvas-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--syntax-variable);
+}
+
+.canvas-title-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+}
+
+.canvas-title-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.canvas-selector-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.canvas-selector-trigger:hover {
+  background: var(--toolbar-button-hover);
+}
+
+/* Lock Indicator */
+.canvas-lock-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: var(--canvas-warning);
+  background: oklch(75% 0.18 80 / 0.15);
+  border-radius: 4px;
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ============================================================
+   Canvas Toolbar
+   ============================================================ */
+
+.canvas-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--canvas-border);
+  gap: 8px;
+}
+
+.canvas-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.canvas-toolbar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--editor-line-number);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.canvas-toolbar-button:hover {
+  background: var(--toolbar-button-hover);
+  color: var(--syntax-variable);
+}
+
+.canvas-toolbar-button:active {
+  background: var(--toolbar-button-active);
+}
+
+.canvas-toolbar-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.canvas-toolbar-button--active {
+  background: var(--toolbar-button-active);
+  color: var(--version-current);
+}
+
+/* Tab Buttons */
+.canvas-tab-group {
+  display: flex;
+  background: var(--editor-bg);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.canvas-tab {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--editor-line-number);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.canvas-tab:hover {
+  color: var(--syntax-variable);
+}
+
+.canvas-tab--active {
+  background: var(--toolbar-button-hover);
+  color: var(--syntax-variable);
+}
+
+/* Version Control */
+.canvas-version-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--editor-line-number);
+}
+
+.canvas-version-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.canvas-version-indicator {
+  padding: 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.canvas-version-current {
+  color: var(--version-current);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Canvas Editor
+   ============================================================ */
+
+.canvas-editor-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.canvas-editor {
+  width: 100%;
+  height: 100%;
+  background: var(--editor-bg);
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  font-feature-settings: 'liga' 1, 'calt' 1;
+  tab-size: 2;
+  overflow: auto;
+}
+
+/* Line Numbers */
+.canvas-line-numbers {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 50px;
+  background: var(--editor-bg);
+  border-right: 1px solid var(--canvas-border);
+  user-select: none;
+  padding-top: 12px;
+}
+
+.canvas-line-number {
+  display: block;
+  padding-right: 12px;
+  text-align: right;
+  color: var(--editor-line-number);
+  font-size: 12px;
+  line-height: 1.6;
+  height: calc(13px * 1.6);
+}
+
+.canvas-line-number--active {
+  color: var(--editor-line-number-active);
+}
+
+/* Editor Content */
+.canvas-editor-content {
+  padding: 12px 12px 12px 62px;
+  min-height: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Selection */
+.canvas-editor ::selection {
+  background: var(--editor-selection);
+}
+
+/* Current Line Highlight */
+.canvas-line--current {
+  background: var(--editor-line-highlight);
+  margin: 0 -12px;
+  padding: 0 12px;
+}
+
+/* ============================================================
+   Syntax Highlighting
+   ============================================================ */
+
+.token.keyword { color: var(--syntax-keyword); }
+.token.string { color: var(--syntax-string); }
+.token.function { color: var(--syntax-function); }
+.token.comment { color: var(--syntax-comment); font-style: italic; }
+.token.variable { color: var(--syntax-variable); }
+.token.number { color: var(--syntax-number); }
+.token.operator { color: var(--syntax-operator); }
+.token.type,
+.token.class-name { color: var(--syntax-type); }
+.token.property { color: var(--syntax-property); }
+.token.tag { color: var(--syntax-tag); }
+.token.attr-name { color: var(--syntax-property); }
+.token.attr-value { color: var(--syntax-string); }
+.token.punctuation { color: var(--syntax-operator); }
+
+/* ============================================================
+   Edit Animations
+   ============================================================ */
+
+@keyframes text-insert {
+  from {
+    background-color: var(--diff-added-bg);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes text-delete {
+  0% {
+    opacity: 1;
+    background-color: var(--diff-removed-bg);
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.canvas-line--inserted {
+  animation: text-insert 1s ease-out;
+}
+
+.canvas-line--deleted {
+  animation: text-delete 0.3s ease-out forwards;
+}
+
+/* Version Transition */
+.canvas-editor-content--transitioning {
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+/* ============================================================
+   Diff Display (In Chat)
+   ============================================================ */
+
+.canvas-diff {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.canvas-diff-line {
+  padding: 2px 12px;
+  white-space: pre;
+}
+
+.canvas-diff-line--added {
+  background: var(--diff-added-bg);
+  border-left: 3px solid var(--diff-added-border);
+}
+
+.canvas-diff-line--removed {
+  background: var(--diff-removed-bg);
+  border-left: 3px solid var(--diff-removed-border);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.canvas-diff-line--context {
+  color: var(--diff-context);
+  background: var(--editor-bg);
+}
+
+.canvas-diff-separator {
+  padding: 4px 12px;
+  color: var(--diff-context);
+  background: var(--canvas-bg);
+  text-align: center;
+  font-size: 11px;
+}
+
+/* ============================================================
+   Canvas Update Notification (In Chat)
+   ============================================================ */
+
+.canvas-update-notification {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--canvas-header-bg);
+  border: 1px solid var(--canvas-border);
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.canvas-update-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--syntax-variable);
+}
+
+.canvas-update-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--canvas-info);
+}
+
+.canvas-update-changes {
+  font-size: 12px;
+  color: var(--editor-line-number);
+  padding-left: 24px;
+}
+
+.canvas-update-changes li {
+  margin: 4px 0;
+}
+
+.canvas-update-actions {
+  display: flex;
+  gap: 8px;
+  padding-left: 24px;
+}
+
+.canvas-update-button {
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--canvas-border);
+  background: var(--toolbar-button-bg);
+  color: var(--syntax-variable);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.canvas-update-button:hover {
+  background: var(--toolbar-button-hover);
+}
+
+.canvas-update-button--primary {
+  background: var(--version-current);
+  border-color: var(--version-current);
+  color: oklch(15% 0.01 260);
+}
+
+.canvas-update-button--primary:hover {
+  background: oklch(75% 0.15 200);
+}
+
+/* ============================================================
+   Canvas Selector Dropdown
+   ============================================================ */
+
+.canvas-selector-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--canvas-bg);
+  border: 1px solid var(--canvas-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3);
+  z-index: 100;
+  overflow: hidden;
+  animation: dropdown-enter 0.15s ease;
+}
+
+@keyframes dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.canvas-selector-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.canvas-selector-item:hover {
+  background: var(--toolbar-button-hover);
+}
+
+.canvas-selector-item--active {
+  background: var(--toolbar-button-active);
+}
+
+.canvas-selector-item-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+}
+
+.canvas-selector-item-title {
+  flex: 1;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.canvas-selector-item-check {
+  width: 16px;
+  height: 16px;
+  color: var(--canvas-success);
+}
+
+.canvas-selector-divider {
+  height: 1px;
+  background: var(--canvas-border);
+  margin: 4px 0;
+}
+
+.canvas-selector-action {
+  color: var(--version-current);
+}
+
+/* ============================================================
+   Preview Mode (for Markdown/HTML)
+   ============================================================ */
+
+.canvas-preview {
+  padding: 24px;
+  background: var(--editor-bg);
+  overflow: auto;
+  height: 100%;
+}
+
+.canvas-preview h1,
+.canvas-preview h2,
+.canvas-preview h3 {
+  color: var(--syntax-variable);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.canvas-preview h1 { font-size: 1.75em; }
+.canvas-preview h2 { font-size: 1.5em; }
+.canvas-preview h3 { font-size: 1.25em; }
+
+.canvas-preview p {
+  margin: 1em 0;
+  line-height: 1.6;
+}
+
+.canvas-preview code {
+  background: var(--canvas-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+}
+
+.canvas-preview pre {
+  background: var(--canvas-bg);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.canvas-preview pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.canvas-preview a {
+  color: var(--version-current);
+  text-decoration: none;
+}
+
+.canvas-preview a:hover {
+  text-decoration: underline;
+}
+
+.canvas-preview blockquote {
+  border-left: 3px solid var(--canvas-border);
+  padding-left: 16px;
+  margin: 1em 0;
+  color: var(--editor-line-number);
+}
+
+.canvas-preview ul,
+.canvas-preview ol {
+  padding-left: 24px;
+  margin: 1em 0;
+}
+
+.canvas-preview li {
+  margin: 0.5em 0;
+}
+
+/* ============================================================
+   Responsive Adjustments
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .canvas-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw !important;
+    max-width: 100vw;
+    z-index: 50;
+  }
+
+  .canvas-resize-handle {
+    display: none;
+  }
+
+  .canvas-header {
+    padding: 12px 16px;
+  }
+
+  .canvas-toolbar {
+    flex-wrap: wrap;
+    padding: 8px 16px;
+  }
+}
+
+/* ============================================================
+   Accessibility
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-line--inserted,
+  .canvas-line--deleted,
+  .canvas-editor-content--transitioning,
+  .canvas-selector-dropdown,
+  .canvas-lock-indicator {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Focus styles */
+.canvas-toolbar-button:focus-visible,
+.canvas-tab:focus-visible,
+.canvas-selector-trigger:focus-visible {
+  outline: 2px solid var(--version-current);
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --canvas-border: oklch(50% 0.05 260);
+    --editor-line-number: oklch(70% 0.02 260);
+  }
+}
