@@ -2,7 +2,7 @@
 
 > **For**: Agent-Girl Canvas Mode
 > **Date**: 2025-11-29
-> **Status**: HIGH PRIORITY BUGS COMPLETE
+> **Status**: MEDIUM PRIORITY BUGS COMPLETE
 
 ---
 
@@ -16,11 +16,11 @@ Canvas Mode has been **successfully integrated** into Agent-Girl at `/home/reave
 |----------|----------|-------|-----------|
 | Critical | 7 | **7** | 0 |
 | High | 18 | **18** | 0 |
-| Medium | 22 | 0 | 22 |
+| Medium | 22 | **22** | 0 |
 | Low | 17 | 0 | 17 |
-| **TOTAL** | **64** | **25** | **39** |
+| **TOTAL** | **64** | **47** | **17** |
 
-Build passes. All tests pass. All critical and high priority bugs fixed.
+Build passes. All tests pass (216 tests, 981 assertions). All critical, high, and medium priority bugs fixed.
 
 ---
 
@@ -55,20 +55,36 @@ Build passes. All tests pass. All critical and high priority bugs fixed.
 17. ✅ canvasUtils.ts - No filename length validation (255 char limit)
 18. ✅ canvasUtils.ts - Unicode BiDi override chars not filtered (security)
 
+### Medium (22/22 Fixed)
+1. ✅ canvasStore.ts - localStorage error handling for corrupt data
+2. ✅ canvasStore.ts - Cursor position preserved across version changes
+3. ✅ canvasStore.ts - goToVersion logs errors for invalid index
+4. ✅ canvasStore.ts - History limit boundary condition fixed
+5. ✅ CanvasPanel.tsx - Bounds checking on currentIndex access
+6. ✅ CanvasPanel.tsx - Stale content access validation
+7. ✅ CanvasPanel.tsx - Clipboard errors show user feedback
+8. ✅ CanvasPanel.tsx - Blob URL timing for downloads
+9. ✅ CanvasPanel.tsx - Escape key preventDefault added
+10. ✅ useCanvasShortcuts.tsx - URL cleanup timing increased to 5s
+11. ✅ useCanvasShortcuts.tsx - Async handleCopy properly awaited
+12. ✅ useCanvasShortcuts.tsx - Input detection includes select/shadow DOM
+13. ✅ useCanvasShortcuts.tsx - Unused dependency removed
+14. ✅ canvasWebSocketHandler.ts - Parse errors returned to caller
+15. ✅ canvasWebSocketHandler.ts - Empty SEARCH/REPLACE blocks rejected
+16. ✅ canvasWebSocketHandler.ts - Embedded quotes in attributes parsed
+17. ✅ searchReplace.ts - Range offset bug in adjacent file blocks
+18. ✅ searchReplace.ts - Dead code in stringSimilarity removed
+19. ✅ searchReplace.ts - Unicode smart quotes supported
+20. ✅ canvasUtils.ts - Zero-width characters filtered
+21. ✅ canvasUtils.ts - Dot-only filenames rejected
+22. ✅ canvasUtils.ts - Fallback parameter consistent
+
 ---
 
 ## Remaining Work
 
-### Medium Priority (22 bugs)
-- canvasStore.ts (4): Map serialization, cursor position, goToVersion, history limit
-- CanvasPanel.tsx (5): Bounds checking, stale content, clipboard errors, blob URL, escape key
-- useCanvasShortcuts.tsx (4): URL cleanup timing, async handleCopy, input detection, unused dependency
-- canvasWebSocketHandler.ts (3): Parse errors, empty blocks, embedded quotes
-- searchReplace.ts (3): Range offset, dead code, Unicode quotes
-- canvasUtils.ts (3): Zero-width chars, dot filenames, fallback default
-
 ### Low Priority (17 bugs)
-Deferred - see detailed tracking in Agent-Girl app.
+Deferred - these are minor polish items. See detailed tracking in Agent-Girl's CANVAS_MODE_HANDOFF.md.
 
 ---
 
@@ -86,7 +102,7 @@ Deferred - see detailed tracking in Agent-Girl app.
 
 ```
 /home/reaver47/.local/share/agent-girl-app/
-├── client/components/canvas/   # Canvas Mode (8 files) - LIVE CODE
+├── client/components/canvas/   # Canvas Mode (8 files + 5 test files) - LIVE CODE
 │   ├── index.ts
 │   ├── canvasStore.ts
 │   ├── CanvasPanel.tsx
@@ -94,7 +110,8 @@ Deferred - see detailed tracking in Agent-Girl app.
 │   ├── canvasWebSocketHandler.ts
 │   ├── searchReplace.ts
 │   ├── canvasUtils.ts
-│   └── canvas.css
+│   ├── canvas.css
+│   └── *.test.ts (5 test files)
 ├── CANVAS_MODE_HANDOFF.md      # Detailed bug tracking
 ```
 
@@ -137,6 +154,6 @@ print("Hello, World!")
 
 ## Next Steps
 
-1. Address 22 medium priority bugs (optional, stability improvements)
+1. ~~Address 22 medium priority bugs~~ ✅ COMPLETE
 2. Address 17 low priority bugs (optional, polish)
 3. Manual testing with the testing checklist in Agent-Girl's CANVAS_MODE_HANDOFF.md
