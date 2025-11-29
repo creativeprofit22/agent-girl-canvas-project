@@ -1,20 +1,20 @@
 # Canvas Mode Integration - Handoff Document
 
-## Status: 54 BUGS FIXED (10 LOW PRIORITY REMAINING)
+## Status: ✅ ALL 64 BUGS FIXED - COMPLETE
 
-Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 955 assertions). A comprehensive code audit found 64 bugs. **54 have been fixed** (7 critical, 18 high, 22 medium, 7 low). **10 remain** (10 low priority only).
+Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 955 assertions). A comprehensive code audit found 64 bugs. **All 64 have been fixed** (7 critical, 18 high, 22 medium, 17 low).
 
 ---
 
-## Bug Summary (Current)
+## Bug Summary (Final)
 
 | Severity | Original | Fixed | Remaining |
 |----------|----------|-------|-----------|
 | Critical | 7 | 7 | **0** |
 | High | 18 | 18 | **0** |
 | Medium | 22 | 22 | **0** |
-| Low | 17 | 7 | **10** |
-| **TOTAL** | **64** | **54** | **10** |
+| Low | 17 | 17 | **0** |
+| **TOTAL** | **64** | **64** | **0** |
 
 ---
 
@@ -22,13 +22,13 @@ Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 
 
 | Bug | File | Fix Description |
 |-----|------|-----------------|
-| ~~#1~~ | canvasStore.ts | Race condition in acquireLock - now uses `get()` before `set()` for atomic read |
-| ~~#2~~ | canvasStore.ts | Non-idempotent lock - now returns true if same actor already has lock |
-| ~~#3~~ | CanvasPanel.tsx | XSS in iframe - changed `sandbox="allow-scripts"` to `sandbox="allow-same-origin"` |
-| ~~#4~~ | CanvasPanel.tsx | XSS in markdown - **FALSE POSITIVE** - code was already safe, added security comments |
-| ~~#5~~ | canvasWebSocketHandler.ts | Direct mutation - now creates new object with spread operator |
-| ~~#6~~ | searchReplace.ts | Regex lastIndex - added `fileBlockRegex.lastIndex = 0` |
-| ~~#7~~ | canvasUtils.ts | Windows reserved filenames - added CON, PRN, AUX, NUL, COM1-9, LPT1-9 blocking |
+| ~~#1~~ | canvasStore.ts:549-572 | Race condition in acquireLock - now uses `get()` before `set()` for atomic read |
+| ~~#2~~ | canvasStore.ts:558-560 | Non-idempotent lock - now returns true if same actor already has lock without state change |
+| ~~#3~~ | CanvasPanel.tsx:507-517 | XSS in iframe - changed `sandbox="allow-scripts"` to `sandbox="allow-same-origin"` |
+| ~~#4~~ | CanvasPanel.tsx:522-526 | XSS in markdown - **FALSE POSITIVE** - code was already safe, added security comments |
+| ~~#5~~ | canvasWebSocketHandler.ts:355-357 | Direct mutation - now creates new object with spread operator |
+| ~~#6~~ | searchReplace.ts:78,80 | Regex lastIndex - added `fileBlockRegex.lastIndex = 0` |
+| ~~#7~~ | canvasUtils.ts:24-46 | Windows reserved filenames - added CON, PRN, AUX, NUL, COM1-9, LPT1-9 blocking |
 
 ---
 
@@ -36,24 +36,24 @@ Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 
 
 | Bug | File | Fix Description |
 |-----|------|-----------------|
-| ~~#1~~ | canvasStore.ts | Race condition in createCanvas - moved all logic inside `set()` callback |
-| ~~#2~~ | canvasStore.ts | Memory leak - consolidated multiple `get()` calls into single state snapshot |
-| ~~#3~~ | CanvasPanel.tsx | Memory leak - added `requestAnimationFrame` throttling to resize handler |
-| ~~#5~~ | CanvasPanel.tsx | Bounds check - added `currentContent?.version ?? 0` |
-| ~~#6~~ | useCanvasShortcuts.tsx | Event listener - memoized `canvasSwitchActions` for stable references |
-| ~~#7~~ | useCanvasShortcuts.tsx | Modifier matching - reordered shortcuts, fixed shift/alt logic |
-| ~~#9~~ | canvasWebSocketHandler.ts | Regex lastIndex - added `createRegex.lastIndex = 0` |
-| ~~#10~~ | canvasWebSocketHandler.ts | Regex lastIndex - added `editRegex.lastIndex = 0` |
-| ~~#11~~ | canvasStore.ts | Array index bounds validation gap - added re-validation in debounce case |
-| ~~#12~~ | canvasStore.ts | Off-by-one in fuzzy matching loop - fixed loop condition |
-| ~~#13~~ | CanvasPanel.tsx | Race condition on panelWidth - used ref pattern to capture stable value |
-| ~~#14~~ | useCanvasShortcuts.tsx | Keyboard shortcuts breaking text input - emptied `alwaysAllowed` array |
-| ~~#15~~ | searchReplace.ts | Off-by-one in bigrams() - added single-char unigram handling |
-| ~~#16~~ | searchReplace.ts | Memory explosion in countOccurrences() - replaced split() with indexOf() loop |
-| ~~#17~~ | searchReplace.ts | Flawed idempotency check - removed false-positive-prone logic |
-| ~~#18~~ | canvasUtils.ts | Trailing dots not removed - added trailing dot/space removal |
-| ~~#19~~ | canvasUtils.ts | No filename length validation - added 255 char limit with extension preservation |
-| ~~#20~~ | canvasUtils.ts | Unicode BiDi chars not filtered - added BiDi override character removal |
+| ~~#1~~ | canvasStore.ts:256-307 | Race condition in createCanvas - moved all logic inside `set()` callback |
+| ~~#2~~ | canvasStore.ts:469-500 | Memory leak - consolidated multiple `get()` calls into single state snapshot |
+| ~~#3~~ | CanvasPanel.tsx:71-101 | Memory leak - added `requestAnimationFrame` throttling to resize handler |
+| ~~#5~~ | CanvasPanel.tsx:288-290 | Bounds check - added `currentContent?.version ?? 0` |
+| ~~#6~~ | useCanvasShortcuts.tsx:154-189 | Event listener - memoized `canvasSwitchActions` for stable references |
+| ~~#7~~ | useCanvasShortcuts.tsx:166-172 | Modifier matching - reordered shortcuts, fixed shift/alt logic |
+| ~~#9~~ | canvasWebSocketHandler.ts:276-297 | Regex lastIndex - added `createRegex.lastIndex = 0` |
+| ~~#10~~ | canvasWebSocketHandler.ts:300-308 | Regex lastIndex - added `editRegex.lastIndex = 0` |
+| ~~#11~~ | canvasStore.ts:326 | Array index bounds validation gap - added re-validation in debounce case |
+| ~~#12~~ | canvasStore.ts:151 | Off-by-one in fuzzy matching loop - fixed loop condition |
+| ~~#13~~ | CanvasPanel.tsx:71-101 | Race condition on panelWidth - used ref pattern to capture stable value |
+| ~~#14~~ | useCanvasShortcuts.tsx:163,176 | Keyboard shortcuts breaking text input - emptied `alwaysAllowed` array |
+| ~~#15~~ | searchReplace.ts:372-379 | Off-by-one in bigrams() - added single-char unigram handling |
+| ~~#16~~ | searchReplace.ts:303-306 | Memory explosion in countOccurrences() - replaced split() with indexOf() loop |
+| ~~#17~~ | searchReplace.ts:174 | Flawed idempotency check - removed false-positive-prone logic |
+| ~~#18~~ | canvasUtils.ts:32-38 | Trailing dots not removed - added trailing dot/space removal |
+| ~~#19~~ | canvasUtils.ts:24-46 | No filename length validation - added 255 char limit with extension preservation |
+| ~~#20~~ | canvasUtils.ts:32-38 | Unicode BiDi chars not filtered - added BiDi override character removal |
 
 ---
 
@@ -107,7 +107,7 @@ Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 
 
 ---
 
-## ✅ FIXED - Low Priority Bugs (7/17)
+## ✅ FIXED - Low Priority Bugs (17/17)
 
 | Bug | File | Fix Description |
 |-----|------|-----------------|
@@ -118,24 +118,26 @@ Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 
 | ~~LP-5~~ | searchReplace.ts | Unicode quotes - added \u2018\u2019 (single curly quotes) to all regexes |
 | ~~LP-6~~ | searchReplace.ts | DiffLine docs - added clarifying comment for optional lineNumber field |
 | ~~LP-7~~ | canvasStore.ts | Magic numbers - added comprehensive JSDoc for MAX_LEVENSHTEIN_LENGTH |
+| ~~LP-8~~ | CanvasPanel.tsx | Keyboard accessibility - added tabIndex, onKeyDown, role="option" to selector items |
+| ~~LP-9~~ | CanvasPanel.tsx | Missing aria-labels - added aria-label to all toolbar buttons |
+| ~~LP-10~~ | CanvasPanel.tsx | Textarea accessibility - added aria-label to canvas editor textarea |
+| ~~LP-11~~ | CanvasPanel.tsx | Missing icons - added Box/Globe icons for diagram/html canvas types |
+| ~~LP-12~~ | useCanvasShortcuts.tsx | handleCopy bounds - added currentIndex bounds check before array access |
+| ~~LP-13~~ | canvas.css | Browser compatibility - added hex color fallbacks for oklch() properties |
+| ~~LP-14~~ | CanvasPanel.tsx | Preview error handling - added onError handler to HTML preview iframe |
+| ~~LP-15~~ | canvas.css | Dropdown overflow - added max-height: 300px and overflow-y: auto |
+| ~~LP-16~~ | useCanvasShortcuts.tsx | Type cleanup - created ShortcutDisplay interface, removed unnecessary cast |
+| ~~LP-17~~ | CanvasPanel.tsx | Copy feedback - replaced TODO comment with console.log success message |
 
 ---
 
-## 🟢 REMAINING - Low Priority Bugs (10)
-
-Deferred - minor polish items remaining.
-
----
-
-## Integration Location
-
-The live code is integrated into Agent-Girl at:
+## File Locations
 
 ```
 /home/reaver47/.local/share/agent-girl-app/
 ├── client/
 │   ├── components/
-│   │   ├── canvas/           # Canvas Mode (8 source + 5 test files)
+│   │   ├── canvas/           # Canvas Mode (8 files)
 │   │   │   ├── index.ts
 │   │   │   ├── canvasStore.ts
 │   │   │   ├── CanvasPanel.tsx
@@ -143,8 +145,7 @@ The live code is integrated into Agent-Girl at:
 │   │   │   ├── canvasWebSocketHandler.ts
 │   │   │   ├── searchReplace.ts
 │   │   │   ├── canvasUtils.ts
-│   │   │   ├── canvas.css
-│   │   │   └── *.test.ts (5 test files)
+│   │   │   └── canvas.css
 │   │   └── chat/
 │   │       └── ChatContainer.tsx  # MODIFIED
 │   ├── App.tsx                    # MODIFIED
@@ -158,14 +159,14 @@ The live code is integrated into Agent-Girl at:
 ## How Canvas Mode Works
 
 ### AI Creates Canvas
-```xml
+```
 <canvas_create type="code" title="app.py" language="python">
 print("Hello World")
 </canvas_create>
 ```
 
 ### AI Edits Canvas
-```xml
+```
 <canvas_edit id="canvas-abc123">
 <<<<<<< SEARCH
 print("Hello World")
@@ -193,7 +194,14 @@ print("Hello, Canvas!")
 
 ---
 
-## Testing Checklist
+## Next Steps
+
+1. ~~Fix remaining high priority bugs~~ ✅ COMPLETE
+2. ~~Address 22 medium priority bugs~~ ✅ COMPLETE
+3. ~~Address 17 low priority bugs~~ ✅ COMPLETE
+4. Manual testing with checklist below
+
+### Testing Checklist
 
 - [ ] Start Agent-Girl, open a chat
 - [ ] Ask AI to "write a Python script with 20+ lines"
