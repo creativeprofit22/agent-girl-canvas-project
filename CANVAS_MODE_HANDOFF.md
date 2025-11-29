@@ -2,7 +2,7 @@
 
 > **For**: Agent-Girl Canvas Mode
 > **Date**: 2025-11-29
-> **Status**: INTEGRATED - Bug Fixes In Progress
+> **Status**: HIGH PRIORITY BUGS COMPLETE
 
 ---
 
@@ -15,12 +15,12 @@ Canvas Mode has been **successfully integrated** into Agent-Girl at `/home/reave
 | Severity | Original | Fixed | Remaining |
 |----------|----------|-------|-----------|
 | Critical | 7 | **7** | 0 |
-| High | 18 | **8** | 10 |
+| High | 18 | **18** | 0 |
 | Medium | 22 | 0 | 22 |
 | Low | 17 | 0 | 17 |
-| **TOTAL** | **64** | **15** | **49** |
+| **TOTAL** | **64** | **25** | **39** |
 
-Build passes. All tests pass.
+Build passes. All tests pass. All critical and high priority bugs fixed.
 
 ---
 
@@ -35,7 +35,7 @@ Build passes. All tests pass.
 6. ✅ searchReplace.ts - fileBlockRegex lastIndex not reset
 7. ✅ canvasUtils.ts - Windows reserved filenames not blocked
 
-### High (8/18 Fixed)
+### High (18/18 Fixed)
 1. ✅ canvasStore.ts - Race condition in createCanvas
 2. ✅ canvasStore.ts - Memory leak from repeated get() calls
 3. ✅ CanvasPanel.tsx - Resize listener memory leak (throttling added)
@@ -44,15 +44,31 @@ Build passes. All tests pass.
 6. ✅ useCanvasShortcuts.tsx - Overly strict modifier key matching
 7. ✅ canvasWebSocketHandler.ts - createRegex lastIndex bug
 8. ✅ canvasWebSocketHandler.ts - editRegex lastIndex bug
+9. ✅ canvasStore.ts - Array index bounds validation gap in debounce case
+10. ✅ canvasStore.ts - Off-by-one in fuzzy matching loop
+11. ✅ CanvasPanel.tsx - Race condition if panelWidth changes during resize
+12. ✅ useCanvasShortcuts.tsx - Keyboard shortcuts (Ctrl+S, Ctrl+\) break text input
+13. ✅ searchReplace.ts - Off-by-one in bigrams() for single-char strings
+14. ✅ searchReplace.ts - Memory explosion in countOccurrences() with split()
+15. ✅ searchReplace.ts - Flawed idempotency check causing false positives
+16. ✅ canvasUtils.ts - Trailing dots not removed (Windows NTFS)
+17. ✅ canvasUtils.ts - No filename length validation (255 char limit)
+18. ✅ canvasUtils.ts - Unicode BiDi override chars not filtered (security)
 
 ---
 
 ## Remaining Work
 
-See `/home/reaver47/.local/share/agent-girl-app/CANVAS_MODE_HANDOFF.md` for:
-- 10 remaining high priority bugs
-- 22 medium priority bugs
-- 17 low priority bugs
+### Medium Priority (22 bugs)
+- canvasStore.ts (4): Map serialization, cursor position, goToVersion, history limit
+- CanvasPanel.tsx (5): Bounds checking, stale content, clipboard errors, blob URL, escape key
+- useCanvasShortcuts.tsx (4): URL cleanup timing, async handleCopy, input detection, unused dependency
+- canvasWebSocketHandler.ts (3): Parse errors, empty blocks, embedded quotes
+- searchReplace.ts (3): Range offset, dead code, Unicode quotes
+- canvasUtils.ts (3): Zero-width chars, dot filenames, fallback default
+
+### Low Priority (17 bugs)
+Deferred - see detailed tracking in Agent-Girl app.
 
 ---
 
@@ -62,8 +78,7 @@ See `/home/reaver47/.local/share/agent-girl-app/CANVAS_MODE_HANDOFF.md` for:
 |------|---------|
 | `CANVAS_MODE_DESIGN_SPEC.md` | Full design specification |
 | `CANVAS_MODE_HANDOFF.md` | This status file |
-| `canvas-implementation/` | Original source files (pre-integration) |
-| `*.md` research files | Background research (can be deleted) |
+| `canvas-implementation/` | Original source files (pre-integration, reference only) |
 
 ---
 
@@ -71,7 +86,7 @@ See `/home/reaver47/.local/share/agent-girl-app/CANVAS_MODE_HANDOFF.md` for:
 
 ```
 /home/reaver47/.local/share/agent-girl-app/
-├── client/components/canvas/   # Canvas Mode (8 files)
+├── client/components/canvas/   # Canvas Mode (8 files) - LIVE CODE
 │   ├── index.ts
 │   ├── canvasStore.ts
 │   ├── CanvasPanel.tsx
@@ -117,3 +132,11 @@ print("Hello, World!")
 >>>>>>> REPLACE
 </canvas_edit>
 ```
+
+---
+
+## Next Steps
+
+1. Address 22 medium priority bugs (optional, stability improvements)
+2. Address 17 low priority bugs (optional, polish)
+3. Manual testing with the testing checklist in Agent-Girl's CANVAS_MODE_HANDOFF.md
