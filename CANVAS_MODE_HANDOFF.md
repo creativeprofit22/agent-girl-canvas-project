@@ -1,8 +1,12 @@
 # Canvas Mode Integration - Handoff Document
 
-## Status: ✅ ALL 64 BUGS FIXED - COMPLETE
+## Status: 64 BUGS FIXED + 5 INTEGRATION FIXES - 1 UX ISSUE REMAINING
 
-Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 955 assertions). A comprehensive code audit found 64 bugs. **All 64 have been fixed** (7 critical, 18 high, 22 medium, 17 low).
+Canvas Mode is integrated into Agent-Girl. Build passes, tests pass (214 tests, 955 assertions).
+
+- **64 original bugs fixed** (7 critical, 18 high, 22 medium, 17 low)
+- **5 integration fixes applied** (persistence, tag cleanup, system prompt, archiving, validation)
+- **1 UX issue remaining**: Streaming flash (content appears in chat then moves to canvas)
 
 ---
 
@@ -194,23 +198,60 @@ print("Hello, Canvas!")
 
 ---
 
+---
+
+## ✅ FIXED - Integration Issues (5/5)
+
+| Issue | File | Fix Description |
+|-------|------|-----------------|
+| Canvas state not persisted | canvasStore.ts:670-694 | Added `activeCanvasId` and `isCanvasOpen` to localStorage persistence |
+| Malformed tags visible in chat | ChatContainer.tsx:745 | Removed `notifications.length > 0` condition - always clean tags |
+| Inconsistent canvas activation | systemPrompt.ts:187-222 | Clear ≥20 line rule with explicit DO/DON'T list |
+| Silent archive failure at max capacity | canvasStore.ts:712-721 | Removed 30-minute time gate, added console warning |
+| Missing attribute errors silent | canvasWebSocketHandler.ts:280-379 | Returns `{ messages, errors }`, shows Parse Error notifications |
+
+---
+
+## 🔴 REMAINING - Streaming Flash Issue (1)
+
+**Problem:** When Claude generates canvas content, the raw `<canvas_create>` tags and code appear in chat during streaming, then disappear when complete and move to canvas. This creates a jarring "flash" effect.
+
+**Root Cause:** Canvas extraction happens only when response completes (`message.type === 'result'`), not during streaming.
+
+**File:** `ChatContainer.tsx` - streaming handler
+
+**Solution Needed:** Stream directly to canvas
+1. Detect `<canvas_create` tag during streaming
+2. Route content directly to canvas panel as it streams
+3. Never show canvas content in chat
+4. Show placeholder like "Creating canvas..." in chat instead
+
+**Implementation Location:**
+- `ChatContainer.tsx` - where `assistant_message` streaming is handled
+- Need to add state machine: `normal` → `in_canvas_tag` → `normal`
+- Buffer content when in canvas tag, send to store via `updateCanvas()`
+
+---
+
 ## Next Steps
 
 1. ~~Fix remaining high priority bugs~~ ✅ COMPLETE
 2. ~~Address 22 medium priority bugs~~ ✅ COMPLETE
 3. ~~Address 17 low priority bugs~~ ✅ COMPLETE
-4. Manual testing with checklist below
+4. ~~Fix integration issues~~ ✅ COMPLETE
+5. **TODO: Implement streaming to canvas (Option B)**
 
 ### Testing Checklist
 
-- [ ] Start Agent-Girl, open a chat
-- [ ] Ask AI to "write a Python script with 20+ lines"
-- [ ] Verify canvas panel opens on right
-- [ ] Verify canvas content is displayed
-- [ ] Test Ctrl+\ to toggle panel
-- [ ] Test Ctrl+Z undo
-- [ ] Ask AI to modify the code
-- [ ] Verify SEARCH/REPLACE edits work
-- [ ] Test version navigation (< > buttons)
-- [ ] Test download button
-- [ ] Test copy button
+- [x] Start Agent-Girl, open a chat
+- [x] Ask AI to "write a Python script with 20+ lines"
+- [x] Verify canvas panel opens on right
+- [x] Verify canvas content is displayed
+- [ ] Verify NO flash of content in chat during streaming ← **REMAINING**
+- [x] Test Ctrl+\ to toggle panel
+- [x] Test Ctrl+Z undo
+- [x] Ask AI to modify the code
+- [x] Verify SEARCH/REPLACE edits work
+- [x] Test version navigation (< > buttons)
+- [x] Test download button
+- [x] Test copy button
